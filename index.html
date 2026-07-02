@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Virtish Visva R — Coming Soon</title>
+  <meta name="theme-color" content="#EDDCC6" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon"    href="favicon.ico">
+  <link rel="icon" type="image/svg+xml"   href="favicon.svg">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+  <link rel="apple-touch-icon" sizes="180x180"    href="apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+
+  <!-- Canela via Fontshare -->
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=canela@300,400,700&display=swap" rel="stylesheet">
+
+  <!-- Fraunces (italic) + Inter (UI) via Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Aurora background -->
+  <canvas id="aurora" aria-hidden="true"></canvas>
+
+  <!-- Editorial grid lines -->
+  <div class="grid-lines" aria-hidden="true">
+    <i></i><i></i><i></i>
+  </div>
+
+  <!-- Corner registration marks -->
+  <div class="corner-mark corner-tl" aria-hidden="true"></div>
+  <div class="corner-mark corner-tr" aria-hidden="true"></div>
+  <div class="corner-mark corner-bl" aria-hidden="true"></div>
+  <div class="corner-mark corner-br" aria-hidden="true"></div>
+
+  <!-- Hero -->
+  <main class="hero">
+
+    <!-- Rotating diamond -->
+    <div class="diamond-wrap" id="diamond" aria-hidden="true">
+      <div class="diamond-spin">
+        <div class="diamond-shape"></div>
+        <div class="diamond-dot"></div>
+      </div>
+    </div>
+
+    <h1 class="name fade-up">Virtish Visva <span class="accent-letter">R</span></h1>
+
+    <p class="quote fade-up">Every great experience begins with a thoughtful idea.</p>
+
+    <p class="body-text fade-up">I'm creating something thoughtfully crafted to make a lasting impression.</p>
+
+    <p class="statement fade-up">Crafting Something Worth the Wait.</p>
+
+    <form class="signup-form fade-up" id="signupForm" novalidate>
+      <div class="form-card">
+        <input
+          type="text"
+          id="nameInput"
+          placeholder="Your name"
+          required
+          aria-label="Your name"
+        />
+        <input
+          type="email"
+          id="emailInput"
+          placeholder="Enter your email"
+          required
+          aria-label="Email address"
+        />
+        <button type="submit" id="submitBtn">
+          <span class="btn-label" id="btnLabel">Submit&nbsp;•&nbsp;Be the First to Know</span>
+          <span class="btn-anim" id="btnAnim" aria-hidden="true">
+            <svg id="btnSVG" viewBox="0 0 48 48" width="42" height="42" style="overflow:visible;display:block"></svg>
+          </span>
+        </button>
+      </div>
+
+      <!-- Success overlay — animates in after submission -->
+      <div class="success-card" id="successCard" aria-live="polite">
+        <div class="sc-mark" aria-hidden="true">✦</div>
+        <p class="sc-label">You're on the list</p>
+        <p class="sc-name" id="scName"></p>
+        <div class="sc-rule" aria-hidden="true"></div>
+        <p class="sc-sub">Watch your inbox —<br>something worth the wait is on its way.</p>
+        <div class="sc-countdown" aria-hidden="true">
+          <div class="sc-countdown-fill" id="scCountdownFill"></div>
+        </div>
+        <p class="sc-reset-hint">Returning to form in <span id="scTimer">15</span>s</p>
+      </div>
+
+      <p class="form-message" id="formMessage" role="status"></p>
+    </form>
+
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>
