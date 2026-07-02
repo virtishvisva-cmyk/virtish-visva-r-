@@ -305,6 +305,8 @@ h1.name .accent-letter {
   background: transparent;
   border: none;
   outline: none;
+  -webkit-appearance: none;
+  appearance: none;
   border-bottom: 1px solid var(--border);
   font-family: 'Inter', sans-serif;
   font-size: 0.94rem;
@@ -312,11 +314,14 @@ h1.name .accent-letter {
   color: var(--heading);
   padding: 14px 18px;
   transition: border-color .4s var(--ease);
+  box-shadow: none;
 }
 
-.form-card input:last-of-type { border-bottom: none; }
-.form-card input:focus        { border-color: rgba(var(--accent-rgb), 0.38); }
-.form-card input::placeholder { color: rgba(90, 74, 69, 0.50); }
+.form-card input:last-of-type           { border-bottom: none; }
+.form-card input:focus,
+.form-card input:focus-visible,
+.form-card input:active                 { outline: none !important; box-shadow: none !important; border-color: rgba(var(--accent-rgb), 0.38); }
+.form-card input::placeholder           { color: rgba(90, 74, 69, 0.50); }
 
 
 /* ── Submit button ───────────────────────────────────────────── */
