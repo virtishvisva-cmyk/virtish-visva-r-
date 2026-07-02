@@ -434,7 +434,7 @@ h1.name .accent-letter {
 /* ── Success card ─────────────────────────────────────────────── */
 .success-card {
   position: fixed;
-  top: 50%;
+  top: 44%;
   left: 50%;
   transform: translate(-50%, -45%) scale(0.96);
   width: min(440px, calc(100vw - 48px));
@@ -474,7 +474,7 @@ h1.name .accent-letter {
   pointer-events: none;
 }
 @keyframes scCardOut {
-  to { opacity: 0; transform: translate(-50%, -45%) scale(0.96); }
+  to { opacity: 0; transform: translate(-50%, -48%) scale(0.96); }
 }
 
 /* Form card glides back in after reset */
