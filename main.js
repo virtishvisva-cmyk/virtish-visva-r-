@@ -182,13 +182,13 @@
 (function form() {
 
   /* ▼ PASTE YOUR APPS SCRIPT WEB APP URL HERE ▼ */
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby2VXozGN8NUwbmri-FIX2XtOAcw1ar4vpFoDGd2QNHn2DLkLidvsru6T1DTeCPKEc/exec';
+  const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL';
   /* ▲ ─────────────────────────────────────── ▲ */
 
   const ACCENT      = '#BF4646';
   const CIRC        = 2 * Math.PI * 19;
   const CHECK_LEN   = 42;
-  const RESET_DELAY = 15;
+  const RESET_DELAY = 3;
   const E           = 'cubic-bezier(0.22,1,0.36,1)';
 
   const signupForm  = document.getElementById('signupForm');
@@ -325,7 +325,123 @@
     }, 950);
   }
 
-  /* ── Submit handler ──────────────────────────────────────── */
+  /* ── Email validation — strict multi-rule check ─────────────
+     Blocks: missing @, missing TLD, consecutive dots,
+             dots at start/end, invalid characters,
+             TLD under 2 chars, domain with no dot.
+  ─────────────────────────────────────────────────────────── */
+  function isValidEmail(email) {
+    if (!email || typeof email !== 'string') return false;
+
+    /* Must have exactly one @ */
+    const parts = email.split('@');
+    if (parts.length !== 2) return false;
+
+    const [local, domain] = parts;
+
+    /* ── Local part (before @) ── */
+    if (!local || local.length < 1 || local.length > 64)   return false;
+    if (local.startsWith('.') || local.endsWith('.'))       return false;
+    if (local.includes('..'))                               return false;
+    if (!/^[a-zA-Z0-9._%+\-]+$/.test(local))               return false;
+
+    /* ── Domain part (after @) ── */
+    if (!domain || domain.length < 4 || domain.length > 255) return false;
+    if (domain.startsWith('.') || domain.endsWith('.'))       return false;
+    if (domain.startsWith('-') || domain.endsWith('-'))       return false;
+    if (domain.includes('..'))                                return false;
+    if (!/^[a-zA-Z0-9.\-]+$/.test(domain))                   return false;
+
+    /* Must have at least one dot in domain */
+    const domainParts = domain.split('.');
+    if (domainParts.length < 2) return false;
+
+    /* TLD must be 2–24 letters only (no numbers) */
+    const tld = domainParts[domainParts.length - 1];
+    if (!/^[a-zA-Z]{2,24}$/.test(tld)) return false;
+
+    /* Domain label before TLD must exist and be non-empty */
+    const domainLabel = domainParts[domainParts.length - 2];
+    if (!domainLabel || domainLabel.length < 1) return false;
+
+    return true;
+  }
+  /* ── Disposable email domain list ───────────────────────────
+     Background check — invisible to visitor until blocked.
+     Friendly error shown if a temp/throwaway domain is used.
+  ─────────────────────────────────────────────────────────── */
+  const DISPOSABLE = new Set([
+    'mailinator.com','guerrillamail.com','guerrillamail.net','guerrillamail.org',
+    'guerrillamail.de','guerrillamail.info','guerrillamail.biz','grr.la',
+    'sharklasers.com','spam4.me','yopmail.com','yopmail.fr','cool.fr.nf',
+    'jetable.fr.nf','nospam.ze.tc','nomail.xl.cx','mega.zik.dj','speed.1s.fr',
+    'courriel.fr.nf','moncourrier.fr.nf','monemail.fr.nf','monmail.fr.nf',
+    'tempmail.com','temp-mail.org','temp-mail.io','tempmail.net','tempmail.org',
+    'tempmail.de','tempmail.it','tempmail.plus','throwam.com','throwam.net',
+    '10minutemail.com','10minutemail.net','10minutemail.org','10minutemail.co.uk',
+    '10minutemail.de','10minutemail.ru','10minutemail.be','10minutemail.cf',
+    'trashmail.com','trashmail.net','trashmail.org','trashmail.at','trashmail.me',
+    'trashmail.io','trashmail.xyz','trashmail.de','trash-mail.at','trashmail2.com',
+    'dispostable.com','discard.email','spamgourmet.com','spamgourmet.net',
+    'spamgourmet.org','mailnull.com','spam.la','maildrop.cc','mailnesia.com',
+    'fakeinbox.com','pookmail.com','spamfree24.org','spamfree24.de','spamfree24.eu',
+    'spamfree24.info','spamfree24.net','mailscrap.com','inboxclean.com',
+    'junk1.com','spamcero.com','spamboy.com','tempr.email','tempr.email',
+    'disbox.net','disbox.org','discardmail.com','discardmail.de',
+    'wegwerfmail.de','wegwerfmail.net','wegwerfmail.org','wegwerfemail.de',
+    'filzmail.com','emailtemporario.com.br','mailexpire.com','spamherelots.com',
+    'spamhereplease.com','jetable.com','jetable.net','jetable.org','jetable.pp.ua',
+    'nomail.xl.cx','nospamfor.us','anonbox.net','anonymbox.com',
+    'throwaway.email','throwam.com','spamgrap.com','spamevader.com',
+    'mailtemp.net','mailtemp.org','getnada.com','meltmail.com',
+    'deadaddress.com','getonemail.com','getonemail.net','haltospam.com',
+    'incognitomail.com','incognitomail.net','incognitomail.org',
+    'mailzilla.com','mailzilla.org','nwldx.com','objectmail.com',
+    'obobbo.com','odnorazovoe.ru','oneoffmail.com','online.ms',
+    'pjjkp.com','plexolan.de','politikerclub.de','poofy.org',
+    'rklips.com','rmqkr.net','rppkn.com','rtrtr.com',
+    's0ny.net','safetypost.de','sandelf.de','saynotospams.com',
+    'schachrol.com','sdfghyj.tk','selfdestructingmail.com',
+    'sendspamhere.com','shiftmail.com','shitmail.me','shitmail.org',
+    'skeefmail.com','slopsbox.com','smellfear.com','snakemail.com',
+    'sneakemail.com','sofimail.com','sofort-mail.de','spamavert.com',
+    'spambob.com','spambob.net','spambob.org','spambog.com',
+    'spambog.de','spambog.ru','spambox.us','spamcannon.com',
+    'spamcannon.net','spamcon.org','spamcorptastic.com',
+    'spamex.com','spamfree.eu','spamgoes.in','spamherelots.com',
+    'yopmail.com','mailnull.com','spamgourmet.com','mailexpire.com'
+  ]);
+
+  function isDisposable(email) {
+    const domain = email.split('@')[1]?.toLowerCase().trim();
+    return domain ? DISPOSABLE.has(domain) : false;
+  }
+
+  /* ── DNS domain existence check ─────────────────────────────
+     Uses Google's free public DNS API — no API key needed.
+     Catches real typos like gmoil.vpm that pass format checks
+     but don't actually exist as mail domains.
+  ─────────────────────────────────────────────────────────── */
+  async function checkEmailDomain(email) {
+    const domain = email.split('@')[1];
+    /* Timeout after 5s — if DNS is slow, allow it through */
+    const timeout = new Promise(resolve => setTimeout(() => resolve(true), 5000));
+    try {
+      const dnsCheck = fetch(
+        `https://dns.google/resolve?name=${encodeURIComponent(domain)}&type=MX`
+      )
+      .then(r => r.json())
+      .then(data => {
+        /* Status 3 = NXDOMAIN — domain does not exist */
+        if (data.Status === 3) return false;
+        /* Status 0 = domain exists */
+        return data.Status === 0;
+      });
+      return await Promise.race([dnsCheck, timeout]);
+    } catch {
+      return true; /* network error → don't block the user */
+    }
+  }
   signupForm.addEventListener('submit', async function (e) {
     e.preventDefault();
     if (btn.disabled) return;
@@ -333,12 +449,37 @@
     clearTimeout(resetTimeout);
     clearInterval(timerInterval);
 
-    const name       = nameInput.value.trim();
-    const email      = emailInput.value.trim();
-    const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const name     = nameInput.value.trim();
+    const email    = emailInput.value.trim();
+    const isValid  = isValidEmail(email);
 
-    if (!name)       { setMessage('Please enter your name.');    return; }
-    if (!validEmail) { setMessage('Please enter a valid email.'); return; }
+    /* ── Validation chain ────────────────────────────────── */
+    if (!name) {
+      setMessage('Please enter your name.', true);
+      return;
+    }
+    if (!isValid) {
+      setMessage('Please enter a valid email address.', true);
+      return;
+    }
+    if (isDisposable(email)) {
+      setMessage('Please use a valid personal or business email address.', true);
+      return;
+    }
+
+    /* ── DNS domain check (async) ────────────────────────────
+       Verifies the domain actually exists — catches typos
+       like gmoil.vpm, yahooo.cm, gmail.con etc.
+    ─────────────────────────────────────────────────────── */
+    setMessage('Verifying email…');
+    const domainExists = await checkEmailDomain(email);
+    formMessage.classList.remove('visible');
+    formMessage.textContent = '';
+
+    if (!domainExists) {
+      setMessage('This email domain doesn\'t exist. Did you make a typo?', true);
+      return;
+    }
 
     const apiCall = (!SCRIPT_URL || SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL')
       ? () => wait(1800)
