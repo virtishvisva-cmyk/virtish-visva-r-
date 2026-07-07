@@ -182,7 +182,7 @@
 (function form() {
 
   /* ▼ PASTE YOUR APPS SCRIPT WEB APP URL HERE ▼ */
-  const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby2VXozGN8NUwbmri-FIX2XtOAcw1ar4vpFoDGd2QNHn2DLkLidvsru6T1DTeCPKEc/exec';
   /* ▲ ─────────────────────────────────────── ▲ */
 
   const ACCENT      = '#BF4646';
